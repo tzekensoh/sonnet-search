@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+  <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+          <style>
+            h1{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            }
+            h2{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            }
+            div{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 100px;
+            }
+            button{
+            background-color: Black;
+            color: white;
+            border-radius: 5px;
+            }
+        </style>
+</head>
+<body>
+  <py-env>
+    - paths:
+      - ./word_dict.json
+      - ./sonnet_dict.json
+  </py-env>
+  <h1>Sonnet search</h1>
+  <input type="text" name="english" id="english" placeholder="Type keyword here..." />
+  <button id="search">Search</button>
+  <br>
+  <div id="output"></div>
+  <py-script>
+import json
+import pyodide
+
+f = open('sonnet_dict.json')
+ 
+# returns JSON object as 
+# a dictionary
+sonnet_dict = json.load(f)
+f.close
+
+f = open('word_dict.json')
+word_dict = json.load(f)
+f.close
+
+def search_sonnet(event) :
+    input_text = document.querySelector("#english")
+    word = input_text.value
+    output_div = document.querySelector("#output")
+    output_div.innerText = format_search_result(word)
+
+def format_search_result(word) :
+    inner_html = ""
+    sonnet_numbers = word_dict.get(word)
+    if sonnet_numbers == None :
+        inner_html = "No result."
+    else :
+        for number in sonnet_numbers :
+            inner_html = inner_html + number + "\n"
+            inner_html = inner_html + "<p>" + sonnet_dict.get(number) + "</p>"
+    return inner_html
+
+search_element = document.getElementById('search')
+search_element.addEventListener('click', pyodide.create_proxy(search_sonnet))
+</body>
+
+
+</html>
